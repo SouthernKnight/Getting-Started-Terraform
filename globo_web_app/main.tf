@@ -1,11 +1,13 @@
- ##################################################################################
+##################################################################################
 # PROVIDERS
 ##################################################################################
 
 provider "aws" {
-  access_key = "ACCESS_KEY"
-  secret_key = "SECRET_KEY"
-  region     = "us-east-1"
+  #access_key = "AKIASDTAPIRKIQISGDU5"
+  access_key = var.aws_access_key
+  #secret_key = "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"
+  secret_key = var.aws_secret_key
+  region     = var.aws_region
 }
 
 ##################################################################################
@@ -25,17 +27,21 @@ resource "aws_vpc" "vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = "true"
 
+  tags = local.common_tags
 }
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
 
+  tags = local.common_tags
 }
 
 resource "aws_subnet" "subnet1" {
   cidr_block              = "10.0.0.0/24"
   vpc_id                  = aws_vpc.vpc.id
   map_public_ip_on_launch = "true"
+
+  tags = local.common_tags
 }
 
 # ROUTING #
@@ -46,6 +52,8 @@ resource "aws_route_table" "rtb" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
+
+  tags = local.common_tags
 }
 
 resource "aws_route_table_association" "rta-subnet1" {
@@ -74,6 +82,8 @@ resource "aws_security_group" "nginx-sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = local.common_tags
 }
 
 # INSTANCES #
@@ -91,5 +101,6 @@ sudo rm /usr/share/nginx/html/index.html
 echo '<html><head><title>Taco Team Server</title></head><body style=\"background-color:#1F778D\"><p style=\"text-align: center;\"><span style=\"color:#FFFFFF;\"><span style=\"font-size:28px;\">You did it! Have a &#127790;</span></span></p></body></html>' | sudo tee /usr/share/nginx/html/index.html
 EOF
 
+  tags = local.common_tags
 }
 
