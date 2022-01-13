@@ -22,8 +22,8 @@ data "aws_ssm_parameter" "ami" {
 
 # NETWORKING #
 resource "aws_vpc" "vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = "true"
+  cidr_block           = var.vpc_cidr_block
+  enable_dns_hostnames = var.enable_dns_hostnames
 
   tags = local.common_tags
 }
@@ -35,9 +35,9 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_subnet" "subnet1" {
-  cidr_block              = "10.0.0.0/24"
+  cidr_block              = var.vpc_subnet1_cidr_block
   vpc_id                  = aws_vpc.vpc.id
-  map_public_ip_on_launch = "true"
+  map_public_ip_on_launch = var.map_public_ip_on_launch
 
   tags = local.common_tags
 }
@@ -60,7 +60,7 @@ resource "aws_route_table_association" "rta-subnet1" {
 }
 
 # SECURITY GROUPS #
-# Nginx security group 
+# Nginx security group
 resource "aws_security_group" "nginx-sg" {
   name   = "nginx_sg"
   vpc_id = aws_vpc.vpc.id
@@ -87,7 +87,7 @@ resource "aws_security_group" "nginx-sg" {
 # INSTANCES #
 resource "aws_instance" "nginx1" {
   ami                    = nonsensitive(data.aws_ssm_parameter.ami.value)
-  instance_type          = "t2.micro"
+  instance_type          = var.instance_type
   subnet_id              = aws_subnet.subnet1.id
   vpc_security_group_ids = [aws_security_group.nginx-sg.id]
 
@@ -100,5 +100,5 @@ echo '<html><head><title>Taco Team Server</title></head><body style=\"background
 EOF
 
   tags = local.common_tags
-}
 
+}
