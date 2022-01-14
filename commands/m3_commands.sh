@@ -16,10 +16,10 @@ terraform -help
 mkdir globo_web_app
 cp ./base_web_app/main.tf ./globo_web_app/main.tf
 
-# Now we can work with the main.tf file in globo_web_app
+# Now we can work with the network.tf file in globo_web_app
 cd globo_web_app
 
-# Open the main.tf file in your code editor and replace the values 
+# Open the network.tf file in your code editor and replace the values
 # for the AWS keys in the config file
 
 # !! DO NOT COMMIT THESE TO SOURCE CONTROL !!
